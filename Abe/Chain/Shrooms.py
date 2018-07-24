@@ -24,6 +24,9 @@ class Shrooms(ShroomsChain):
         chain.magic = "\xe2\xf2\xb7\xd1"
         chain.decimals = 6
         ShroomsChain.__init__(chain, **kwargs)
+		
+    def has_feature(chain, feature):
+        return feature == 'nvc_proof_of_stake'
 
     datadir_conf_file_name = "SHROOMS.conf"
     datadir_rpcport = 14250
