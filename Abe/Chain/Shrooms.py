@@ -22,7 +22,7 @@ class Shrooms(ShroomsChain):
         chain.code3 = 'SHRM'
         chain.address_version = "\x3F"
         chain.magic = "\xe2\xf2\xb7\xd1"
-        chain.decimals = 6
+        chain.decimals = 8
         ShroomsChain.__init__(chain, **kwargs)
 		
 #    def has_feature(chain, feature):
