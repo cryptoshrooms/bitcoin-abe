@@ -23,5 +23,5 @@ class ShroomsChain(Sha256Chain, PpcPosChain):
     """
     Chain with Shrooms proof of stake.
     """
-    def has_feature(chain, feature):
-        return feature == 'nvc_proof_of_stake'
+ #   def has_feature(chain, feature):
+ #       return feature == 'nvc_proof_of_stake'
