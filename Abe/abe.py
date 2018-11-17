@@ -68,6 +68,10 @@ DEFAULT_TEMPLATE = """
     <title>%(title)s</title>
 </head>
 <body>
+
+<div id="wrap">
+   <div id="content">
+
     <h1><a href="%(dotdot)s%(HOMEPAGE)s"><img
      src="%(dotdot)s%(STATIC_PATH)slogo32.png" alt="Abe logo" /></a> %(h1)s
     </h1>
@@ -82,6 +86,9 @@ DEFAULT_TEMPLATE = """
         <a href="%(dotdot)saddress/%(DONATIONS_BTC)s">BTC</a>
         <a href="%(dotdot)saddress/%(DONATIONS_NMC)s">NMC</a>
     </p>
+</div>
+</div>
+
 </body>
 </html>
 """

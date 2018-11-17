@@ -15,6 +15,20 @@
    License along with this program.  If not, see
    <http://www.gnu.org/licenses/agpl.html>.
  */
+
+#wrap {
+    float: left;
+    position: relative;
+    left: 50%;
+}
+
+#content {
+	float: left;
+	position: relative;
+	left: -50%;
+	text-align: left;
+}
+
 td, th {
     font-family: Verdana, Helvetica, sans-serif;
     margin: 0;
