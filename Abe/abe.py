@@ -39,7 +39,7 @@ import base58
 
 __version__ = version.__version__
 
-ABE_APPNAME = "Abe"
+ABE_APPNAME = "Shrooms"
 ABE_VERSION = __version__
 ABE_URL = 'https://github.com/bitcoin-abe/bitcoin-abe'
 
@@ -292,11 +292,8 @@ class Abe:
         body += [
             abe.search_form(page),
             '<table>\n',
-            '<tr><th>Currency</th><th>Code</th><th>Block</th><th>Time</th>',
+            '<tr><th>Crypto</th><th>Code</th><th>Block</th><th>Time</th>',
             '<th>Started</th><th>Age (days)</th><th>Coins Created</th>',
-            '<th>Avg Coin Age</th><th>',
-            '% <a href="https://en.bitcoin.it/wiki/Bitcoin_Days_Destroyed">',
-            'CoinDD</a></th>',
             '</tr>\n']
         now = time.time() - EPOCH1970
 
@@ -356,9 +353,7 @@ class Abe:
                     body += [
                         '<td>', format_time(started)[:10], '</td>',
                         '<td>', '%5g' % (chain_age / 86400.0), '</td>',
-                        '<td>', format_satoshis(satoshis, chain), '</td>',
-                        '<td>', avg_age, '</td>',
-                        '<td>', percent_destroyed, '</td>']
+                        '<td>', format_satoshis(satoshis, chain), '</td>']
 
             body += ['</tr>\n']
         body += ['</table>\n']
@@ -495,11 +490,8 @@ class Abe:
         body += ['<p>', nav, '</p>\n',
                  '<table><tr><th>Block</th><th>Approx. Time</th>',
                  '<th>Transactions</th><th>Value Out</th>',
-                 '<th>Difficulty</th><th>Outstanding</th>',
-                 '<th>Average Age</th><th>Chain Age</th>',
-                 '<th>% ',
-                 '<a href="https://en.bitcoin.it/wiki/Bitcoin_Days_Destroyed">',
-                 'CoinDD</a></th>',
+                 '<th>Difficulty</th><th>Total Supply</th>',
+                 '<th>Chain Age</th>',
                  ['<th>Satoshi-seconds</th>',
                   '<th>Total ss</th>']
                  if extra else '',
@@ -533,9 +525,7 @@ class Abe:
                 '</td><td>', format_satoshis(value_out, chain),
                 '</td><td>', util.calculate_difficulty(int(nBits)),
                 '</td><td>', format_satoshis(satoshis, chain),
-                '</td><td>', avg_age,
                 '</td><td>', '%5g' % (seconds / 86400.0),
-                '</td><td>', percent_destroyed,
                 ['</td><td>', '%8g' % ss,
                  '</td><td>', '%8g' % total_ss] if extra else '',
                 '</td></tr>\n']
@@ -581,7 +571,7 @@ class Abe:
                 'Proof of Stake' if is_stake_block else 'Proof of Work',
                 ': ',
                 format_satoshis(b['generated'], chain), ' coins generated<br />\n']
-        body += ['Hash: ', b['hash'], '<br />\n']
+        body += ['Hash: ', b['hash'], '<br /><br />\n']
 
         if b['hashPrev'] is not None:
             body += ['Previous Block: <a href="', dotdotblock,
@@ -589,42 +579,26 @@ class Abe:
         if b['next_block_hashes']:
             body += ['Next Block: ']
         for hash in b['next_block_hashes']:
-            body += ['<a href="', dotdotblock, hash, '">', hash, '</a><br />\n']
+            body += ['<a href="', dotdotblock, hash, '">', hash, '</a><br /><br />\n']
 
         body += [
-            ['Height: ', b['height'], '<br />\n']
+            ['Height: ', b['height'], '<br /><br />\n']
             if b['height'] is not None else '',
 
             'Version: ', b['version'], '<br />\n',
             'Transaction Merkle Root: ', b['hashMerkleRoot'], '<br />\n',
-            'Time: ', b['nTime'], ' (', format_time(b['nTime']), ')<br />\n',
+            'Time: ', b['nTime'], ' (', format_time(b['nTime']), ')<br /><br />\n',
             'Difficulty: ', format_difficulty(util.calculate_difficulty(b['nBits'])),
             ' (Bits: %x)' % (b['nBits'],), '<br />\n',
 
-            ['Cumulative Difficulty: ', format_difficulty(
-                    util.work_to_difficulty(b['chain_work'])), '<br />\n']
-            if b['chain_work'] is not None else '',
+
 
             'Nonce: ', b['nNonce'], '<br />\n',
             'Transactions: ', len(b['transactions']), '<br />\n',
-            'Value out: ', format_satoshis(b['value_out'], chain), '<br />\n',
+            'Value out: ', format_satoshis(b['value_out'], chain), ' SHRM<br />\n',
             'Transaction Fees: ', format_satoshis(b['fees'], chain), '<br />\n',
 
-            ['Average Coin Age: %6g' % (b['satoshi_seconds'] / 86400.0 / b['chain_satoshis'],),
-             ' days<br />\n']
-            if b['chain_satoshis'] and (b['satoshi_seconds'] is not None) else '',
 
-            '' if b['satoshis_destroyed'] is None else
-            ['Coin-days Destroyed: ',
-             format_satoshis(b['satoshis_destroyed'] / 86400.0, chain), '<br />\n'],
-
-            ['Cumulative Coin-days Destroyed: %6g%%<br />\n' %
-             (100 * (1 - float(b['satoshi_seconds']) / b['chain_satoshi_seconds']),)]
-            if b['chain_satoshi_seconds'] else '',
-
-            ['sat=',b['chain_satoshis'],';sec=',seconds,';ss=',b['satoshi_seconds'],
-             ';total_ss=',b['chain_satoshi_seconds'],';destroyed=',b['satoshis_destroyed']]
-            if abe.debug else '',
 
             '</p>\n']
 
@@ -638,18 +612,18 @@ class Abe:
             body += ['<tr><td><a href="../tx/' + tx['hash'] + '">',
                      tx['hash'][:10], '...</a>'
                      '</td><td>', format_satoshis(tx['fees'], chain),
-                     '</td><td>', tx['size'] / 1000.0,
+                     ' SHRM</td><td>', tx['size'] / 1000.0,
                      '</td><td>']
 
             if tx is b['transactions'][0]:
                 body += [
                     'POS ' if is_stake_block else '',
-                    'Generation: ', format_satoshis(b['generated'], chain), ' + ',
-                    format_satoshis(b['fees'], chain), ' total fees']
+                    'Germinated: ', format_satoshis(b['generated'], chain), ' SHRM']
+
             else:
                 for txin in tx['in']:
                     body += [abe.format_addresses(txin, page['dotdot'], chain), ': ',
-                             format_satoshis(txin['value'], chain), '<br />']
+                             format_satoshis(txin['value'], chain), ' SHRM<br />']
 
             body += ['</td><td>']
             for txout in tx['out']:
@@ -665,7 +639,7 @@ class Abe:
                         continue
 
                 body += [abe.format_addresses(txout, page['dotdot'], chain), ': ',
-                         format_satoshis(txout['value'], chain), '<br />']
+                         format_satoshis(txout['value'], chain), ' SHRM<br />']
 
             body += ['</td></tr>\n']
         body += '</table>\n'
@@ -898,7 +872,7 @@ class Abe:
                  '<h3>Transactions</h3>\n'
                  '<table class="addrhist">\n<tr><th>Transaction</th><th>Block</th>'
                  '<th>Approx. Time</th><th>Amount</th><th>Balance</th>'
-                 '<th>Currency</th></tr>\n']
+                 '<th>Crypto</th></tr>\n']
 
         for elt in txpoints:
             chain = elt['chain']
@@ -932,7 +906,7 @@ class Abe:
         q = (page['params'].get('q') or [''])[0]
         return [
             '<p>Search by address, block number or hash, transaction or'
-            ' public key hash, or chain name:</p>\n'
+            ' public key hash:</p>\n'
             '<form action="', page['dotdot'], 'search"><p>\n'
             '<input name="q" size="64" value="', escape(q), '" />'
             '<button type="submit">Search</button>\n'
@@ -1811,7 +1785,7 @@ def format_satoshis(satoshis, chain):
 
 def format_difficulty(diff):
     idiff = int(diff)
-    ret = '.%03d' % (int(round((diff - idiff) * 1000)),)
+    ret = '.%04d' % (int(round((diff - idiff) * 10000)),)
     while idiff > 999:
         ret = (' %03d' % (idiff % 1000,)) + ret
         idiff = idiff / 1000
